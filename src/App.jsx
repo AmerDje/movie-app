@@ -1,35 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
 
+//there are two types of components
+
+/* //Class Component
+//Not recommended to use
+class App extends React.Component {
+  render() {
+    return <h1>Class Component</h1>
+  }
+}*/
+
+//Function component
+/*
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+ <h1>Function Component</h1> 
+  );
+}*/
 
-export default App
+const App = () => {
+  return (
+    //when multiple must have a parent element which is now a fragment <> or regular div
+    <>
+      <h1>Function Component</h1>
+      <Card />
+    </>
+  );
+};
+
+const Card = () => {
+  return <h1>Card</h1>;
+};
+export default App;
