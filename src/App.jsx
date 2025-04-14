@@ -1,4 +1,10 @@
+import { useEffect, useState } from "react";
 import "./App.css";
+
+// useState for managing state (setState in flutter)
+// useEffect for handling side effects like data fetching (it runs after every ui build in the start and when we rebuild component)
+// useContext for sharing data across components
+// useCallback for optimizing callback functions
 
 //there are two types of components
 
@@ -34,10 +40,28 @@ const App = () => {
 
 //props are passed in as an object to the component
 const Card = ({ title, year }) => {
+  const [count, setCount] = useState(0);
+  //every function starts with use in react is a hook
+  const [hasLiked, setHasLiked] = useState(false);
+  //const [variableGonnaChange (state), variableChanger] = useState(initialState)
+  //use effect is called in every state rebuild so we gonna use [] so it calls only when some variable changes
+  useEffect(() => {
+    console.log(`${title} has been Liked: ${hasLiked}`);
+    //fires only when hasLiked updated
+  }, [hasLiked]);
+
+  //when dependency list is defined and is empty, use effect fires only once at the mounting or creation or first appears of that component
+  useEffect(() => {
+    console.log("Created");
+  }, []);
+
   return (
     // when using props they should be between {}
     <div
       className="card"
+      //it is never recommended in react to update the state by using the state it self so we use a callback function
+      onClick={() => setCount((prevState) => prevState + 1)}
+      //  onClick={() => setCount(count + 1)}
       // style={{
       //   border: "1px solid #4b5362",
       //   padding: "20px",
@@ -47,8 +71,19 @@ const Card = ({ title, year }) => {
       //   minHeight: "100px",
       // }}
     >
-      <h2>{title}</h2>
+      <h2>
+        {title} <br /> {count || null}
+        {/* means count ? count : null, means if count is null dont show else show */}
+      </h2>
       <p>{year}</p>
+      <button
+        onClick={() => {
+          //setHasLiked(!hasLiked);
+          setHasLiked((prevState) => !prevState);
+        }}
+      >
+        {hasLiked ? "❤️" : "🤍"}
+      </button>
     </div>
   );
 };
