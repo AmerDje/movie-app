@@ -1,7 +1,8 @@
-import React from "react";
+import { useState, React } from "react";
 import Search from "./components/Search/Search";
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState("");
   return (
     <main>
       <div className="pattern">
@@ -13,8 +14,8 @@ function App() {
               Without Hassle
             </h1>
           </header>
-
-          <Search />
+          {/* we passed searchTerm and its set because we want to update with it the movies list and it wont update if we define it inside search component */}
+          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </div>
       </div>
     </main>
