@@ -77,6 +77,7 @@ function App() {
                 {movieList.map((movie) => (
                   //key is a unique identifier needed so react knows what to render and to update
                   //every component has a predefined key property so we only assign it
+                  <MovieCard key={movie.id} movie={movie} />
                 ))}
               </ul>
             )}
