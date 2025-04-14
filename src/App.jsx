@@ -20,11 +20,14 @@ function App() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchMovies = async () => {
+  const fetchMovies = async (query = "") => {
     setIsLoading(true);
     setErrorMessage("");
     try {
-      const endpoint = `${baseUrl}/discover/movie?sort_by=popularity.desc`;
+      // we added encodeURIComponent to handle special characters and spaces
+      const endpoint = query
+        ? `${baseUrl}/search/movie?query=${encodeURIComponent(query)}`
+        : `${baseUrl}/discover/movie?sort_by=popularity.desc`;
       const response = await fetch(endpoint, apiOptions);
 
       if (!response.ok) {
@@ -47,10 +50,10 @@ function App() {
       setIsLoading(false);
     }
   };
-
+  //listen to searchTerm changes and fires fetchMovies
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    fetchMovies(searchTerm);
+  }, [searchTerm]);
 
   return (
     <main>
