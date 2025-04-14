@@ -1,8 +1,57 @@
-import { useState, React } from "react";
-import Search from "./components/Search/Search";
+import { useEffect, useState, React } from "react";
+import Search from "./components/Search";
+import Spinner from "./components/Spiner";
+import MovieCard from "./components/MovieCard";
+
+const baseUrl = "https://api.themoviedb.org/3";
+const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
+const apiOptions = {
+  method: "GET",
+  headers: {
+    accept: "application/json",
+    Authorization: `Bearer ${apiKey}`,
+  },
+};
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [movieList, setMovieList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchMovies = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
+    try {
+      const endpoint = `${baseUrl}/discover/movie?sort_by=popularity.desc`;
+      const response = await fetch(endpoint, apiOptions);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies");
+      }
+
+      const data = await response.json();
+
+      if (data.Response === "False") {
+        setErrorMessage(data.Error || "Failed to fetch movies");
+        setMovieList([]);
+      }
+
+      setMovieList(data.results || []);
+
+      console.log(data.results);
+    } catch (e) {
+      setErrorMessage(`Error Fetching Movies ${e.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovies();
+  }, []);
+
   return (
     <main>
       <div className="pattern">
@@ -13,9 +62,27 @@ function App() {
               Find <span className="text-gradient">Movies</span> You'll Enjoy
               Without Hassle
             </h1>
+            {/* we passed searchTerm and its set because we want to update with it the movies list and it wont update if we define it inside search component */}
+            <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           </header>
-          {/* we passed searchTerm and its set because we want to update with it the movies list and it wont update if we define it inside search component */}
-          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+          <section className="all-movies">
+            <h2 className="mt-[40px]">All Movies</h2>
+            {isLoading ? (
+              <Spinner />
+            ) : errorMessage ? (
+              <p className="text-red-500">{errorMessage}</p>
+            ) : (
+              <ul className="movie-list">
+                {movieList.map((movie) => (
+                  //key is a unique identifier needed so react knows what to render and to update
+                  //every component has a predefined key property so we only assign it
+                ))}
+              </ul>
+            )}
+            {/* this means if errorMessage is not empty show the error message */}
+            {/* {errorMessage && <p className="text-red-500">{errorMessage}</p>} */}
+          </section>
         </div>
       </div>
     </main>
