@@ -18,12 +18,14 @@ const apiOptions = {
 };
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const [movieList, setMovieList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isMoviesLoading, setIsMoviesLoading] = useState(false);
+  const [errorMessageMovies, setErrorMessageMovies] = useState("");
+  const [isTrendingLoading, setIsTrendingLoading] = useState(false);
+  const [errorMessageTrending, setErrorMessageTrending] = useState("");
   useDebounce(
     () => {
       setDebouncedSearchTerm(searchTerm);
@@ -32,8 +34,8 @@ function App() {
     [searchTerm]
   );
   const fetchMovies = async (query = "") => {
-    setIsLoading(true);
-    setErrorMessage("");
+    setIsMoviesLoading(true);
+    setErrorMessageMovies("");
     try {
       // we added encodeURIComponent to handle special characters and spaces
       const endpoint = query
@@ -48,7 +50,7 @@ function App() {
       const data = await response.json();
 
       if (data.Response === "False") {
-        setErrorMessage(data.Error || "Failed to fetch movies");
+        setErrorMessageMovies(data.Error || "Failed to fetch movies");
         setMovieList([]);
       }
 
@@ -57,18 +59,22 @@ function App() {
         updateSearchCount(query, data.results[0]);
       }
     } catch (e) {
-      setErrorMessage(`Error Fetching Movies ${e.message}`);
+      setErrorMessageMovies(`Error Fetching Movies ${e.message}`);
     } finally {
-      setIsLoading(false);
+      setIsMoviesLoading(false);
     }
   };
 
   const loadTrendingMovies = async () => {
+    setIsTrendingLoading(true);
     try {
       const movies = await getTrendingMovies();
       setTrendingMovies(movies);
     } catch (error) {
+      setErrorMessageTrending(`Error Fetching Movies ${error.message}`);
       console.log(error);
+    } finally {
+      setIsTrendingLoading(false);
     }
   };
   //listen to searchTerm changes and fires fetchMovies
@@ -95,21 +101,27 @@ function App() {
           </header>
           <section className="trending">
             <h2>Trending Movies</h2>
-            <ul className="movie-list">
-              {trendingMovies.map((movie, index) => (
-                //  Appwrite that uses $id as a standard for document IDs. and not in javascript
-                <TrendingCard key={movie.$id} movie={movie} index={index} />
-              ))}
-            </ul>
+            {isTrendingLoading ? (
+              <Spinner />
+            ) : errorMessageTrending ? (
+              <p className="text-red-500">{errorMessageTrending}</p>
+            ) : (
+              <ul className="movie-list">
+                {trendingMovies.map((movie, index) => (
+                  //  Appwrite that uses $id as a standard for document IDs. and not in javascript
+                  <TrendingCard key={movie.$id} movie={movie} index={index} />
+                ))}
+              </ul>
+            )}
           </section>
 
           <section className="all-movies">
             {/* <h2 className="mt-[40px]">All Movies</h2> */}
             <h2>All Movies</h2>
-            {isLoading ? (
+            {isMoviesLoading ? (
               <Spinner />
-            ) : errorMessage ? (
-              <p className="text-red-500">{errorMessage}</p>
+            ) : errorMessageMovies ? (
+              <p className="text-red-500">{errorMessageMovies}</p>
             ) : (
               <ul className="movie-list">
                 {movieList.map((movie) => (
@@ -119,8 +131,8 @@ function App() {
                 ))}
               </ul>
             )}
-            {/* this means if errorMessage is not empty show the error message */}
-            {/* {errorMessage && <p className="text-red-500">{errorMessage}</p>} */}
+            {/* this means if errorMessageMovies is not empty show the error message */}
+            {/* {errorMessageMovies && <p className="text-red-500">{errorMessageMovies}</p>} */}
           </section>
         </div>
       </div>
