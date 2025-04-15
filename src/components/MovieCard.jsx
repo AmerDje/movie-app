@@ -4,7 +4,7 @@ function MovieCard({
   movie: { title, poster_path, release_date, original_language, vote_average },
 }) {
   return (
-    <div className="movie-card">
+    <li className="movie-card">
       <img
         className="movie-card__image"
         src={
@@ -29,7 +29,7 @@ function MovieCard({
           </p>
         </div>
       </div>
-    </div>
+    </li>
   );
 }
 
